@@ -1,34 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <!-- Target framework: Windows Desktop (WinForms), .NET 8 -->
     <TargetFramework>net8.0-windows</TargetFramework>
-
-    <!-- Ye batata hai ki aap Windows Forms Application bana rahe hain -->
     <UseWindowsForms>true</UseWindowsForms>
-
-    <!-- Output type: Windows executable (GUI app) -->
     <OutputType>WinExe</OutputType>
-
-    <!-- Nullable reference types enable karein -->
     <Nullable>enable</Nullable>
-
-    <!-- Implicit Using directives .NET 6+ features ke liye -->
     <ImplicitUsings>enable</ImplicitUsings>
-
     <AssemblyName>NetworkMonitorGUI</AssemblyName>
     <RootNamespace>NetworkMonitorGUI</RootNamespace>
-
-    <!-- Supported OS minimum Windows 10 (version 10.0.x) -->
     <SupportedOSPlatformVersion>10.0</SupportedOSPlatformVersion>
-
-    <!-- Target platform minimum version Windows 10, build 19041 (Windows 10 May 2020 Update) -->
-    <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    
+    <!-- Yahaan purani ya galat value ho sakti hai: -->
+    <!--<TargetPlatformVersion>7.0</TargetPlatformVersion>-->
+    
+    <!-- Isko sahi Windows 10 version pe badal dein: -->
+    <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>       <!-- Windows 10 2004 update ka build number -->
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>    <!-- Minimum ye hi hona chahiye -->
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- System.Speech ka reference, voice alerts ke liye -->
     <PackageReference Include="System.Speech" Version="6.0.0" />
   </ItemGroup>
 
