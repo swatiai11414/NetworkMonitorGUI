@@ -11,27 +11,39 @@ jobs:
     runs-on: windows-latest
 
     steps:
+
+      # 1. Checkout your repository code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2. Setup .NET SDK (adjust version as per your target framework)
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
+      # 3. Restore dependencies inside the project folder
       - name: Restore dependencies
         run: dotnet restore
         working-directory: NetworkMonitorGUI
 
+      # 4. Build your project in Release mode
       - name: Build solution
         run: dotnet build --configuration Release --no-restore
         working-directory: NetworkMonitorGUI
 
-      - name: Publish single-file Windows EXE
-        run: dotnet publish --configuration Release --runtime win-x64 --self-contained true /p:PublishSingleFile=true --output ../output
+      # 5. (Optional) Run tests if you have test projects
+      # - name: Run tests
+      #   run: dotnet test --no-build --verbosity normal
+      #   working-directory: NetworkMonitorGUI
+
+      # 6. Publish self-contained single EXE for Windows
+      - name: Publish single-file Windows executable
+        run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true --output ../output
         working-directory: NetworkMonitorGUI
 
-      - name: Upload published EXE
+      # 7. Upload the published executable as artifact
+      - name: Upload published artifact
         uses: actions/upload-artifact@v4
         with:
           name: network-monitor-exe
