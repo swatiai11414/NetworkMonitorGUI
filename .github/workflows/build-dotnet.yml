@@ -2,34 +2,48 @@ name: Build and Publish Network Monitor GUI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
+      # Step 1: Repo code checkout karein
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: .NET SDK setup karein (version project ke hisaab se adjust karein)
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
+      # Step 3: Dependencies restore karein (Correct working directory set karke)
       - name: Restore dependencies
         run: dotnet restore
+        working-directory: NetworkMonitorGUI
 
-      - name: Build solution
+      # Step 4: Release mode me project build karein
+      - name: Build
         run: dotnet build --configuration Release --no-restore
+        working-directory: NetworkMonitorGUI
 
-      - name: Publish self-contained single executable
-        run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true --output ./output
+      # Step 5: (Optional) Tests run karein agar aapke paas tests hain
+      # - name: Run tests
+      #   run: dotnet test --no-build --verbosity normal
+      #   working-directory: NetworkMonitorGUI
 
-      - name: Upload artifact
+      # Step 6: Publish karo Windows self-contained single exe
+      - name: Publish single-file Windows EXE
+        run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true --output ../output
+        working-directory: NetworkMonitorGUI
+
+      # Step 7: Published output ko artifact ke roop me upload karo
+      - name: Upload published EXE artifact
         uses: actions/upload-artifact@v4
         with:
           name: network-monitor-exe
-          path: ./output/
+          path: output/
