@@ -27,7 +27,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
         working-directory: NetworkMonitorGUI
 
-      - name: Publish single-file executable
+      - name: Publish
         run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true --output ../output
         working-directory: NetworkMonitorGUI
 
