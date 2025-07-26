@@ -8,7 +8,7 @@ namespace NetworkMonitorGUI
     public partial class Form1 : Form
     {
         private Process psProcess;
-        private readonly SpeechSynthesizer synth;
+        private readonly SpeechSynthesizer synth = new SpeechSynthesizer();
         private string scriptPath = "";
 
         private readonly string[] suspiciousKeywords = new string[]
@@ -25,8 +25,6 @@ namespace NetworkMonitorGUI
         {
             InitializeComponent();
             SetupHackerTheme();
-            synth = new SpeechSynthesizer();
-
             btnStop.Enabled = false;
             lblStatus.Text = "Status: Idle";
         }
@@ -36,15 +34,13 @@ namespace NetworkMonitorGUI
             this.BackColor = System.Drawing.Color.Black;
             rtbOutput.BackColor = System.Drawing.Color.Black;
             rtbOutput.ForeColor = System.Drawing.Color.LimeGreen;
-            rtbOutput.Font = new System.Drawing.Font("Consolas", 10, System.Drawing.FontStyle.Regular);
+            rtbOutput.Font = new System.Drawing.Font("Consolas", 10);
             lblStatus.ForeColor = System.Drawing.Color.LimeGreen;
 
             btnBrowseScript.BackColor = System.Drawing.Color.DarkSlateGray;
             btnBrowseScript.ForeColor = System.Drawing.Color.White;
-
             btnStart.BackColor = System.Drawing.Color.DarkGreen;
             btnStart.ForeColor = System.Drawing.Color.Black;
-
             btnStop.BackColor = System.Drawing.Color.DarkRed;
             btnStop.ForeColor = System.Drawing.Color.Black;
         }
@@ -53,13 +49,12 @@ namespace NetworkMonitorGUI
         {
             if (!System.IO.File.Exists(path))
             {
-                MessageBox.Show("Selected script file does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Selected script file does not exist.", "Error");
                 return false;
             }
-            var ext = System.IO.Path.GetExtension(path);
-            if (!string.Equals(ext, ".ps1", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(System.IO.Path.GetExtension(path), ".ps1", StringComparison.OrdinalIgnoreCase))
             {
-                MessageBox.Show("Please select a valid PowerShell script (*.ps1).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Please select a valid PowerShell script (*.ps1).", "Error");
                 return false;
             }
             return true;
@@ -70,9 +65,9 @@ namespace NetworkMonitorGUI
             try
             {
                 var fileInfo = new System.IO.FileInfo(scriptFilePath);
-                if (fileInfo.Length > 5 * 1024 * 1024) // 5 MB limit for safety check
+                if (fileInfo.Length > 5 * 1024 * 1024)
                 {
-                    MessageBox.Show("Selected script file size is very large; please verify before running.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Selected script file size is very large; please verify before running.", "Warning");
                     return false;
                 }
 
@@ -83,7 +78,7 @@ namespace NetworkMonitorGUI
                     {
                         if (line.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            MessageBox.Show($"Warning: Script contains suspicious content: '{keyword}'", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show($"Warning: Script contains suspicious content: '{keyword}'", "Warning");
                             return false;
                         }
                     }
@@ -92,7 +87,7 @@ namespace NetworkMonitorGUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Script safety check failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Script safety check failed: {ex.Message}", "Error");
                 return false;
             }
         }
@@ -102,9 +97,8 @@ namespace NetworkMonitorGUI
             using var ofd = new OpenFileDialog()
             {
                 Filter = "PowerShell Scripts (*.ps1)|*.ps1",
-                Title = "Select your network monitor PowerShell script"
+                Title = "Select your PowerShell script"
             };
-
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 if (ValidateScriptFile(ofd.FileName) && IsScriptSafe(ofd.FileName))
@@ -124,13 +118,12 @@ namespace NetworkMonitorGUI
         {
             if (string.IsNullOrEmpty(scriptPath))
             {
-                MessageBox.Show("कृपया पहले .ps1 स्क्रिप्ट चुनें।", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("कृपया पहले .ps1 स्क्रिप्ट चुनें।", "Error");
                 return;
             }
-
             if (psProcess != null && !psProcess.HasExited)
             {
-                MessageBox.Show("Script पहले से ही चल रही है!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Script पहले से ही चल रही है!", "Info");
                 return;
             }
 
@@ -147,7 +140,6 @@ namespace NetworkMonitorGUI
                 },
                 EnableRaisingEvents = true
             };
-
             psProcess.OutputDataReceived += PsProcess_OutputDataReceived;
             psProcess.ErrorDataReceived += PsProcess_ErrorDataReceived;
             psProcess.Exited += PsProcess_Exited;
@@ -163,15 +155,9 @@ namespace NetworkMonitorGUI
                 btnStart.Enabled = false;
                 btnStop.Enabled = true;
             }
-            catch (UnauthorizedAccessException)
-            {
-                MessageBox.Show("Permission denied! कृपया उचित अनुमतियों के साथ ऐप चलाएं।", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lblStatus.Text = "Status: Permission Denied";
-            }
             catch (Exception ex)
             {
-                MessageBox.Show("Script start करने मे समस्या आई। कृपया अनुमति और स्क्रिप्ट सत्यापन करें।", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                System.IO.File.AppendAllText("error_log.txt", $"[{DateTime.Now}] {ex}\n");
+                MessageBox.Show("Script start करने मे समस्या आई। " + ex.Message, "Error");
                 lblStatus.Text = "Status: Error";
             }
         }
@@ -202,7 +188,11 @@ namespace NetworkMonitorGUI
             this.Invoke(new Action(() =>
             {
                 AppendOutput(e.Data);
-                CheckForAlerts(e.Data);
+                if (e.Data.Contains("Alert") || e.Data.Contains("🚨"))
+                {
+                    MessageBox.Show(e.Data, "Network Alert");
+                    try { synth.SpeakAsync("Network speed alert detected."); } catch { }
+                }
             }));
         }
 
@@ -219,17 +209,6 @@ namespace NetworkMonitorGUI
             rtbOutput.ScrollToCaret();
         }
 
-        private void CheckForAlerts(string line)
-        {
-            if (line.Contains("Alert") || line.Contains("🚨"))
-            {
-                MessageBox.Show(line, "Network Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                try { synth.SpeakAsync("Network speed alert detected."); }
-                catch { /* ignore speech errors */ }
-            }
-        }
-
         private void btnStop_Click(object sender, EventArgs e)
         {
             if (psProcess != null && !psProcess.HasExited)
@@ -244,12 +223,12 @@ namespace NetworkMonitorGUI
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Script stop करने मे त्रुटि: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Script stop करने मे त्रुटि: " + ex.Message, "Error");
                 }
             }
             else
             {
-                MessageBox.Show("कोई चलती हुई स्क्रिप्ट नहीं मिली।", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("कोई चलती हुई स्क्रिप्ट नहीं मिली।", "Info");
             }
         }
 
@@ -257,11 +236,7 @@ namespace NetworkMonitorGUI
         {
             if (psProcess != null && !psProcess.HasExited)
             {
-                try
-                {
-                    psProcess.Kill();
-                }
-                catch { }
+                try { psProcess.Kill(); } catch { }
             }
             synth.Dispose();
             base.OnFormClosing(e);
