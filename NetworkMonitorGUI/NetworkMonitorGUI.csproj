@@ -1,24 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
+    <!-- Target framework: .NET 8 Windows Desktop (WinForms) -->
     <TargetFramework>net8.0-windows</TargetFramework>
+
+    <!-- Windows Forms app -->
     <UseWindowsForms>true</UseWindowsForms>
+
+    <!-- Output type: Windows executable -->
     <OutputType>WinExe</OutputType>
+
+    <!-- Nullable reference types enabled -->
     <Nullable>enable</Nullable>
+
+    <!-- Implicit usings in .NET 6+ -->
     <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Assembly info -->
     <AssemblyName>NetworkMonitorGUI</AssemblyName>
     <RootNamespace>NetworkMonitorGUI</RootNamespace>
-    <SupportedOSPlatformVersion>10.0</SupportedOSPlatformVersion>
-    
-    <!-- Yahaan purani ya galat value ho sakti hai: -->
-    <!--<TargetPlatformVersion>7.0</TargetPlatformVersion>-->
-    
-    <!-- Isko sahi Windows 10 version pe badal dein: -->
-    <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>       <!-- Windows 10 2004 update ka build number -->
-    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>    <!-- Minimum ye hi hona chahiye -->
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Speech library for voice alert -->
     <PackageReference Include="System.Speech" Version="6.0.0" />
   </ItemGroup>
 
