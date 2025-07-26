@@ -8,7 +8,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>NetworkMonitorGUI</AssemblyName>
     <RootNamespace>NetworkMonitorGUI</RootNamespace>
-    <SupportedOSPlatformVersion>10.0</SupportedOSPlatformVersion> <!-- Windows 10+ -->
+    <SupportedOSPlatformVersion>10.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion> <!-- This line is crucial -->
+    <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>      <!-- Optionally, use this -->
   </PropertyGroup>
 
   <ItemGroup>
