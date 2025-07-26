@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <OutputType>WinExe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>NetworkMonitorGUI</AssemblyName>
+    <RootNamespace>NetworkMonitorGUI</RootNamespace>
+    <SupportedOSPlatformVersion>10.0</SupportedOSPlatformVersion> <!-- Windows 10+ -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Speech" Version="6.0.0" />
+  </ItemGroup>
+
+</Project>
