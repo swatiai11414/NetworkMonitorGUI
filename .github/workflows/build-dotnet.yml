@@ -23,15 +23,15 @@ jobs:
         run: dotnet restore
         working-directory: NetworkMonitorGUI
 
-      - name: Build
+      - name: Build solution
         run: dotnet build --configuration Release --no-restore
         working-directory: NetworkMonitorGUI
 
-      - name: Publish
-        run: dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true --output ../output
+      - name: Publish single-file Windows EXE
+        run: dotnet publish --configuration Release --runtime win-x64 --self-contained true /p:PublishSingleFile=true --output ../output
         working-directory: NetworkMonitorGUI
 
-      - name: Upload artifact
+      - name: Upload published EXE
         uses: actions/upload-artifact@v4
         with:
           name: network-monitor-exe
